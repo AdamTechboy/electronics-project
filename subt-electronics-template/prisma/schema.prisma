@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AdminRole {
+  OWNER
+  STORE_ADMIN
+  CATALOGUE_MANAGER
+  ENQUIRY_STAFF
+}
+
+enum AdminStatus {
+  INVITED
+  ACTIVE
+  DISABLED
+}
+
+enum StockStatus {
+  CONFIRM_WITH_STORE
+  IN_STOCK
+  OUT_OF_STOCK
+}
+
+enum EnquiryStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  CLOSED
+  SPAM
+}
+
+model AdminUser {
+  id           String      @id @default(cuid())
+  tenantId     String
+  email        String
+  displayName  String
+  passwordHash String
+  role         AdminRole   @default(ENQUIRY_STAFF)
+  status       AdminStatus @default(INVITED)
+  mfaEnabled   Boolean     @default(false)
+  lastLoginAt  DateTime?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  invitations  AdminInvitation[]
+  auditEvents  AuditEvent[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId, status])
+}
+
+model AdminInvitation {
+  id              String    @id @default(cuid())
+  tenantId        String
+  adminUserId     String
+  tokenHash       String    @unique
+  intendedEmail   String
+  expiresAt       DateTime
+  redeemedAt      DateTime?
+  revokedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  createdByAdminId String?
+  adminUser       AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, intendedEmail, expiresAt])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  tenantId    String
+  name        String
+  slug        String
+  description String?
+  sortOrder   Int       @default(0)
+  isActive    Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, isActive, sortOrder])
+}
+
+model Brand {
+  id        String    @id @default(cuid())
+  tenantId  String
+  name      String
+  slug      String
+  isActive  Boolean   @default(true)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, isActive])
+}
+
+model Product {
+  id               String           @id @default(cuid())
+  tenantId         String
+  categoryId       String?
+  brandId          String?
+  name             String
+  slug             String
+  summary          String
+  description      String?
+  priceKobo        Int?
+  currency         String           @default("NGN")
+  stockStatus      StockStatus      @default(CONFIRM_WITH_STORE)
+  warrantySummary  String?
+  isPublished      Boolean          @default(false)
+  isArchived       Boolean          @default(false)
+  category         Category?        @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  brand            Brand?           @relation(fields: [brandId], references: [id], onDelete: SetNull)
+  variants         ProductVariant[]
+  images           ProductImage[]
+  inventoryRecords InventoryRecord[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, isPublished, isArchived])
+  @@index([tenantId, categoryId])
+  @@index([tenantId, brandId])
+}
+
+model ProductVariant {
+  id           String   @id @default(cuid())
+  tenantId     String
+  productId    String
+  sku          String
+  name         String
+  attributes   Json?
+  priceKobo    Int?
+  isActive     Boolean  @default(true)
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([tenantId, sku])
+  @@index([tenantId, productId])
+}
+
+model ProductImage {
+  id           String   @id @default(cuid())
+  tenantId     String
+  productId    String
+  storageKey   String
+  altText      String
+  sortOrder    Int      @default(0)
+  isApproved   Boolean  @default(false)
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@index([tenantId, productId, sortOrder])
+}
+
+model InventoryRecord {
+  id               String      @id @default(cuid())
+  tenantId         String
+  productId        String
+  quantity         Int?
+  stockStatus      StockStatus @default(CONFIRM_WITH_STORE)
+  lastVerifiedAt   DateTime?
+  verifiedByAdminId String?
+  note             String?
+  product          Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@index([tenantId, productId, updatedAt])
+}
+
+model Enquiry {
+  id              String        @id @default(cuid())
+  tenantId        String
+  reference       String        @unique
+  name            String
+  phone           String
+  email           String?
+  productId       String?
+  productName     String?
+  message         String
+  status          EnquiryStatus @default(NEW)
+  assignedAdminId String?
+  source          String        @default("website")
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  closedAt        DateTime?
+
+  @@index([tenantId, status, createdAt])
+  @@index([tenantId, phone])
+}
+
+model AuditEvent {
+  id             String     @id @default(cuid())
+  tenantId       String
+  actorAdminId   String?
+  action         String
+  targetType     String?
+  targetId       String?
+  requestId      String?
+  metadata       Json?
+  createdAt      DateTime   @default(now())
+  actor          AdminUser? @relation(fields: [actorAdminId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([tenantId, actorAdminId, createdAt])
+}
+
+model TenantSetting {
+  id        String   @id @default(cuid())
+  tenantId  String   @unique
+  config    Json
+  updatedAt DateTime @updatedAt
+}
