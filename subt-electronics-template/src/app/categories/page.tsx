@@ -1,6 +1,59 @@
+import React from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { demoCategories } from "@/lib/demo-products";
-export const metadata = { title: "Categories" };
+import { CATEGORIES } from "@/lib/catalogue-data";
+
+export const metadata: Metadata = {
+  title: "Product Categories | Solar Power & Electronics",
+  description:
+    "Explore product categories at Muhammad Kairu Electronics in Jos: Solar Solutions, Inverters, Lithium Batteries, 4K Smart TVs, Audio, Refrigeration, and Electrical Accessories.",
+};
+
 export default function CategoriesPage() {
-  return <div className="container"><section className="page-hero"><p className="eyebrow">Catalogue</p><h1>Product categories</h1><p>These are starter categories only. Final categories should be confirmed with the client.</p></section><section className="section" style={{paddingTop:8}}><div className="category-grid">{demoCategories.map(c=><Link className="category-tile" href={`/products?category=${encodeURIComponent(c)}`} key={c}>{c} ↗</Link>)}</div></section></div>;
+  return (
+    <div className="container" style={{ padding: "40px 0 60px" }}>
+      <div style={{ marginBottom: "32px" }}>
+        <span className="section-eyebrow">Department Directory</span>
+        <h1 style={{ fontSize: "clamp(2rem, 3.5vw, 2.8rem)", fontWeight: 900, color: "var(--navy)", marginBottom: "8px" }}>
+          Product Categories
+        </h1>
+        <p style={{ color: "var(--ink-secondary)", fontSize: "1.05rem", maxWidth: "680px", lineHeight: 1.6 }}>
+          Discover our specialized departments. Whether you are equipping an off-grid solar installation
+          or upgrading your home entertainment, find the right equipment below.
+        </p>
+      </div>
+
+      <div className="category-grid">
+        {CATEGORIES.map((category) => (
+          <Link
+            key={category.slug}
+            href={`/products?category=${category.slug}`}
+            className={`category-card ${category.department === "solar" ? "solar-category" : ""}`}
+          >
+            <div className="category-card-top">
+              <div className="category-icon-box">
+                {category.slug === "solar-power-solutions" && "☀️"}
+                {category.slug === "television-visuals" && "📺"}
+                {category.slug === "home-audio" && "🔊"}
+                {category.slug === "refrigeration-cooling" && "❄️"}
+                {category.slug === "kitchen-appliances" && "🍳"}
+                {category.slug === "electrical-accessories" && "🔌"}
+              </div>
+              <span className="category-badge">{category.itemCountEstimate}</span>
+            </div>
+
+            <h2 className="category-title" style={{ fontSize: "1.2rem" }}>
+              {category.name}
+            </h2>
+            <p className="category-desc">{category.description}</p>
+
+            <div className="category-footer">
+              <span>View Department Products</span>
+              <span>→</span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
 }

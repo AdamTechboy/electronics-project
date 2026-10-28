@@ -1,22 +1,20 @@
 import { tenantConfigSchema } from "./schema";
 
-// Placeholder configuration only. Replace business facts with client-approved data.
-// Contact fields are deliberately blank so the site does not invent contact details.
 export const tenantConfig = tenantConfigSchema.parse({
   tenantId: process.env.TENANT_ID ?? "muhammad-kairu-electronics",
   brand: {
-    name: "MUHAMMAD KAIRU ELECTRONICS",
+    name: "Muhammad Kairu Electronics",
     logoPath: "",
-    primaryColor: "#123B68",
-    accentColor: "#F28C28",
-    fontFamily: "Arial, sans-serif",
+    primaryColor: "#1F2A44",
+    accentColor: "#F5A623",
+    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   },
   contact: {
-    phone: "",
-    whatsapp: "",
-    email: "",
-    address: "",
-    openingHours: "",
+    phone: "07038365737",
+    whatsapp: "07038365737",
+    email: "mkelectronics@gmail.com",
+    address: "No. 41 Ahmadu Bello Way, Shop 31A, Rochas Plaza, opposite Zenith Bank, Jos, Plateau State, Nigeria",
+    openingHours: "Monday - Saturday: 8:30 AM - 6:00 PM",
   },
   features: {
     catalogue: true,
@@ -27,7 +25,7 @@ export const tenantConfig = tenantConfigSchema.parse({
   },
   seo: {
     siteUrl: process.env.APP_BASE_URL ?? "http://localhost:3000",
-    defaultTitle: "Muhammad Kairu Electronics | Product Catalogue",
-    defaultDescription: "Browse the electronics catalogue and contact the store to confirm availability, pricing, and specifications.",
+    defaultTitle: "Muhammad Kairu Electronics | Solar Power & Electronics Retailer (Jos)",
+    defaultDescription: "Browse hybrid solar inverters, lithium batteries, solar panels, 4K TVs, audio systems, and home cooling appliances at Muhammad Kairu Electronics, Jos.",
   },
 });
