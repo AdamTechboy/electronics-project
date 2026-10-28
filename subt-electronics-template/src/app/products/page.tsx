@@ -1,22 +1,41 @@
-import Link from "next/link";
-import { demoProducts } from "@/lib/demo-products";
-import { ProductCard } from "@/components/product-card";
+import React from "react";
+import type { Metadata } from "next";
+import { CatalogueBrowser } from "@/components/catalogue-browser";
 
-export const metadata = { title: "Products" };
+export const metadata: Metadata = {
+  title: "Product Catalogue | Solar Equipment & Electronics",
+  description:
+    "Browse hybrid inverters, solar panels, lithium batteries, 4K Smart TVs, and home cooling appliances at Muhammad Kairu Electronics, Jos.",
+};
 
-export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; q?: string; brand?: string; department?: string }>;
+}) {
   const params = await searchParams;
-  const products = params.category ? demoProducts.filter(p => p.category.toLowerCase() === params.category!.toLowerCase()) : demoProducts;
+
   return (
-    <div className="container">
-      <section className="page-hero">
-        <p className="eyebrow">Catalogue</p><h1>Products</h1>
-        <p>Browse the sample catalogue. Prices and availability must be confirmed with the store. The examples shown here are fictional development data.</p>
-      </section>
-      <div className="section" style={{ paddingTop: 10 }}>
-        {params.category && <p>Category: <strong>{params.category}</strong> · <Link className="text-link" href="/products">Clear filter</Link></p>}
-        {products.length ? <div className="product-grid">{products.map(p => <ProductCard key={p.id} product={p} />)}</div> : <div className="content-card"><h2>No products in this sample category</h2><p>Try the full catalogue or ask the store about the category.</p><Link className="button" href="/products">View all products</Link></div>}
+    <div className="container" style={{ padding: "40px 0 60px" }}>
+      {/* Page Hero */}
+      <div style={{ marginBottom: "28px" }}>
+        <span className="section-eyebrow">Jos Electronics & Solar Showroom</span>
+        <h1 style={{ fontSize: "clamp(2rem, 3.5vw, 2.8rem)", fontWeight: 900, color: "var(--navy)", marginBottom: "8px" }}>
+          Product Catalogue
+        </h1>
+        <p style={{ color: "var(--ink-secondary)", fontSize: "1.05rem", maxWidth: "720px", lineHeight: 1.6 }}>
+          Review technical specifications, capacity ratings, and verified showroom prices.
+          All products can be inspected and picked up at Rochas Plaza, Jos, or enquired about directly on WhatsApp.
+        </p>
       </div>
+
+      {/* Interactive Catalogue Browser */}
+      <CatalogueBrowser
+        initialCategory={params.category || "all"}
+        initialQuery={params.q || ""}
+        initialBrand={params.brand || "all"}
+        initialDepartment={params.department || "all"}
+      />
     </div>
   );
 }
