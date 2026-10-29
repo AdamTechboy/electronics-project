@@ -3,6 +3,9 @@
 import React, { useState, useMemo } from "react";
 import { ProductCard } from "./product-card";
 import {
+  type CatalogueProduct,
+  type CatalogueCategory,
+  type CatalogueBrand,
   PRODUCTS,
   CATEGORIES,
   BRANDS,
@@ -14,6 +17,9 @@ interface CatalogueBrowserProps {
   initialQuery?: string;
   initialBrand?: string;
   initialDepartment?: string;
+  initialProducts?: CatalogueProduct[];
+  initialCategories?: CatalogueCategory[];
+  initialBrands?: CatalogueBrand[];
 }
 
 export function CatalogueBrowser({
@@ -21,7 +27,14 @@ export function CatalogueBrowser({
   initialQuery = "",
   initialBrand = "all",
   initialDepartment = "all",
+  initialProducts,
+  initialCategories,
+  initialBrands,
 }: CatalogueBrowserProps) {
+  const allProducts = initialProducts ?? PRODUCTS;
+  const allCategories = initialCategories ?? CATEGORIES;
+  const allBrands = initialBrands ?? BRANDS;
+
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedBrand, setSelectedBrand] = useState(initialBrand);
@@ -30,7 +43,7 @@ export function CatalogueBrowser({
 
   // Filtered and sorted products
   const filteredProducts = useMemo(() => {
-    let list = [...PRODUCTS];
+    let list = [...allProducts];
 
     // Filter by text search
     if (searchQuery.trim()) {
@@ -80,7 +93,7 @@ export function CatalogueBrowser({
     }
 
     return list;
-  }, [searchQuery, selectedCategory, selectedBrand, selectedDepartment, sortBy]);
+  }, [allProducts, searchQuery, selectedCategory, selectedBrand, selectedDepartment, sortBy]);
 
   const handleClearFilters = () => {
     setSearchQuery("");
@@ -221,7 +234,7 @@ export function CatalogueBrowser({
             >
               All Categories
             </button>
-            {CATEGORIES.map((cat) => (
+            {allCategories.map((cat) => (
               <button
                 key={cat.slug}
                 type="button"
@@ -249,7 +262,7 @@ export function CatalogueBrowser({
             >
               All Brands
             </button>
-            {BRANDS.map((b) => (
+            {allBrands.map((b) => (
               <button
                 key={b.slug}
                 type="button"

@@ -153,8 +153,13 @@ export function formatKoboToNaira(priceKobo: number | null): string {
 // ------------------------------------------------------------------------------
 // Helper: Construct Pre-filled WhatsApp Enquiry Link
 // ------------------------------------------------------------------------------
-export function createWhatsAppEnquiryUrl(productName?: string, productSlug?: string, priceFormatted?: string): string {
-  const phone = STORE_INFO.whatsapp;
+export function createWhatsAppEnquiryUrl(
+  productName?: string,
+  productSlug?: string,
+  priceFormatted?: string,
+  customPhone?: string
+): string {
+  const phone = customPhone || STORE_INFO.whatsapp;
   let text = `Hello Muhammad Kairu Electronics, I am contacting you from your website regarding products at your Jos showroom.`;
 
   if (productName) {
@@ -170,8 +175,8 @@ Please confirm availability, current warranty terms, and collection/delivery arr
 // ------------------------------------------------------------------------------
 // Helper: Construct Solar Sizing Assessment WhatsApp Link
 // ------------------------------------------------------------------------------
-export function createSolarAssessmentUrl(): string {
-  const phone = STORE_INFO.whatsapp;
+export function createSolarAssessmentUrl(customPhone?: string): string {
+  const phone = customPhone || STORE_INFO.whatsapp;
   const text = `Hello Muhammad Kairu Electronics, I need help sizing a solar power system for my home/office in Jos. 
 
 My primary appliances include:

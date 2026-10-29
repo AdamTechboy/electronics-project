@@ -66,6 +66,9 @@ export interface Database {
           features: Json;
           seo_title: string | null;
           seo_description: string | null;
+          delivery_info: string | null;
+          warranty_policy: string | null;
+          about_text: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -88,10 +91,14 @@ export interface Database {
           features?: Json;
           seo_title?: string | null;
           seo_description?: string | null;
+          delivery_info?: string | null;
+          warranty_policy?: string | null;
+          about_text?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['store_settings']['Insert']>;
+        Relationships: [];
       };
 
       profiles: {
@@ -114,6 +121,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['profiles']['Insert']>;
+        Relationships: [];
       };
 
       employee_memberships: {
@@ -136,6 +144,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['employee_memberships']['Insert']>;
+        Relationships: [];
       };
 
       role_permissions: {
@@ -154,6 +163,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database['public']['Tables']['role_permissions']['Insert']>;
+        Relationships: [];
       };
 
       categories: {
@@ -178,6 +188,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['categories']['Insert']>;
+        Relationships: [];
       };
 
       brands: {
@@ -200,6 +211,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['brands']['Insert']>;
+        Relationships: [];
       };
 
       products: {
@@ -244,6 +256,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['products']['Insert']>;
+        Relationships: [];
       };
 
       product_variants: {
@@ -272,6 +285,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['product_variants']['Insert']>;
+        Relationships: [];
       };
 
       product_images: {
@@ -296,6 +310,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database['public']['Tables']['product_images']['Insert']>;
+        Relationships: [];
       };
 
       inventory_records: {
@@ -322,6 +337,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['inventory_records']['Insert']>;
+        Relationships: [];
       };
 
       stock_movements: {
@@ -350,6 +366,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database['public']['Tables']['stock_movements']['Insert']>;
+        Relationships: [];
       };
 
       customers: {
@@ -372,6 +389,7 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['customers']['Insert']>;
+        Relationships: [];
       };
 
       enquiries: {
@@ -410,6 +428,7 @@ export interface Database {
           closed_at?: string | null;
         };
         Update: Partial<Database['public']['Tables']['enquiries']['Insert']>;
+        Relationships: [];
       };
 
       enquiry_notes: {
@@ -428,6 +447,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database['public']['Tables']['enquiry_notes']['Insert']>;
+        Relationships: [];
       };
 
       analytics_events: {
@@ -452,6 +472,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database['public']['Tables']['analytics_events']['Insert']>;
+        Relationships: [];
       };
 
       audit_logs: {
@@ -476,6 +497,7 @@ export interface Database {
           created_at?: string;
         };
         Update: Partial<Database['public']['Tables']['audit_logs']['Insert']>;
+        Relationships: [];
       };
 
       store_announcements: {
@@ -504,8 +526,10 @@ export interface Database {
           updated_at?: string;
         };
         Update: Partial<Database['public']['Tables']['store_announcements']['Insert']>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
     Functions: {
       is_owner: {
         Args: { lookup_uid: string };
@@ -526,4 +550,3 @@ export interface Database {
     };
   };
 }
-

@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BRANDS } from "@/lib/catalogue-data";
+import { getStoreBrands } from "@/lib/catalogue-db";
 
 export const metadata: Metadata = {
   title: "Featured Brands | Solar & Electronics",
@@ -9,7 +9,9 @@ export const metadata: Metadata = {
     "Explore trusted global and domestic electronics & solar brands stocked by Muhammad Kairu Electronics in Jos: Felicity Solar, LG, Samsung, Hisense, Nexus, and Sollatek.",
 };
 
-export default function BrandsPage() {
+export default async function BrandsPage() {
+  const brands = await getStoreBrands();
+
   return (
     <div className="container" style={{ padding: "40px 0 60px" }}>
       <div style={{ marginBottom: "32px" }}>
@@ -24,7 +26,7 @@ export default function BrandsPage() {
       </div>
 
       <div className="category-grid">
-        {BRANDS.map((brand) => (
+        {brands.map((brand) => (
           <Link
             key={brand.slug}
             href={`/products?brand=${brand.slug}`}

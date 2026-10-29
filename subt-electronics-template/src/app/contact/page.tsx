@@ -1,7 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import { EnquiryForm } from "@/components/enquiry-form";
-import { STORE_INFO, createWhatsAppEnquiryUrl } from "@/lib/catalogue-data";
+import { createWhatsAppEnquiryUrl } from "@/lib/catalogue-data";
+import { getStoreSettings } from "@/lib/catalogue-db";
 
 export const metadata: Metadata = {
   title: "Showroom Contact & Enquiries | Jos, Plateau State",
@@ -9,8 +10,9 @@ export const metadata: Metadata = {
     "Contact Muhammad Kairu Electronics at Shop 31A, Rochas Plaza, 41 Ahmadu Bello Way, Jos. Call 07038365737 or enquire directly on WhatsApp.",
 };
 
-export default function ContactPage() {
-  const whatsappUrl = createWhatsAppEnquiryUrl();
+export default async function ContactPage() {
+  const storeSettings = await getStoreSettings();
+  const whatsappUrl = createWhatsAppEnquiryUrl("Contact Enquiry", "", "", storeSettings.whatsapp);
 
   return (
     <div className="container" style={{ padding: "40px 0 60px" }}>
@@ -29,29 +31,29 @@ export default function ContactPage() {
         {/* Showroom Details Card */}
         <div className="showroom-card">
           <span className="section-eyebrow">Location & Direct Channels</span>
-          <h3>{STORE_INFO.name}</h3>
+          <h3>{storeSettings.name}</h3>
 
           <ul className="showroom-detail-list">
             <li className="showroom-detail-item">
               <span className="icon">📍</span>
               <div>
                 <strong>Physical Address:</strong>
-                <span>{STORE_INFO.address}</span>
+                <span>{storeSettings.address}</span>
               </div>
             </li>
             <li className="showroom-detail-item">
               <span className="icon">🕒</span>
               <div>
                 <strong>Operating Hours:</strong>
-                <span>{STORE_INFO.openingHours}</span>
+                <span>{storeSettings.openingHours}</span>
               </div>
             </li>
             <li className="showroom-detail-item">
               <span className="icon">📞</span>
               <div>
                 <strong>Direct Telephone:</strong>
-                <a href={`tel:${STORE_INFO.phone}`} style={{ color: "var(--navy)", fontWeight: 700 }}>
-                  {STORE_INFO.phoneDisplay}
+                <a href={`tel:${storeSettings.phone}`} style={{ color: "var(--navy)", fontWeight: 700 }}>
+                  {storeSettings.phoneDisplay}
                 </a>
               </div>
             </li>
@@ -60,7 +62,7 @@ export default function ContactPage() {
               <div>
                 <strong>WhatsApp Hotline:</strong>
                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--green-dark)", fontWeight: 700 }}>
-                  07038365737 (Click to Chat)
+                  {storeSettings.whatsapp} (Click to Chat)
                 </a>
               </div>
             </li>
@@ -68,8 +70,8 @@ export default function ContactPage() {
               <span className="icon">✉️</span>
               <div>
                 <strong>Email Address:</strong>
-                <a href={`mailto:${STORE_INFO.email}`} style={{ color: "var(--navy)" }}>
-                  {STORE_INFO.email}
+                <a href={`mailto:${storeSettings.email}`} style={{ color: "var(--navy)" }}>
+                  {storeSettings.email}
                 </a>
               </div>
             </li>
@@ -86,7 +88,7 @@ export default function ContactPage() {
               <span>💬</span> Chat on WhatsApp
             </a>
             <a
-              href={`tel:${STORE_INFO.phone}`}
+              href={`tel:${storeSettings.phone}`}
               className="btn btn-navy"
               style={{ flex: 1 }}
             >

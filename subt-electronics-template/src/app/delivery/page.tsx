@@ -1,7 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { STORE_INFO, createWhatsAppEnquiryUrl } from "@/lib/catalogue-data";
+import { createWhatsAppEnquiryUrl } from "@/lib/catalogue-data";
+import { getStoreSettings } from "@/lib/catalogue-db";
 
 export const metadata: Metadata = {
   title: "Delivery & Pickup Information | Muhammad Kairu Electronics (Jos)",
@@ -9,8 +10,9 @@ export const metadata: Metadata = {
     "Pickup and dispatch options for electronics and solar equipment from Muhammad Kairu Electronics, Shop 31A Rochas Plaza, Jos, Plateau State.",
 };
 
-export default function DeliveryPage() {
-  const whatsappUrl = createWhatsAppEnquiryUrl();
+export default async function DeliveryPage() {
+  const storeSettings = await getStoreSettings();
+  const whatsappUrl = createWhatsAppEnquiryUrl("Delivery Enquiry", "", "", storeSettings.whatsapp);
 
   return (
     <div className="container" style={{ padding: "40px 0 60px" }}>
@@ -27,6 +29,17 @@ export default function DeliveryPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "36px", alignItems: "start" }}>
         <div>
+          {storeSettings.deliveryInfo && (
+            <div className="content-card" style={{ marginBottom: "24px" }}>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--navy)", marginBottom: "12px" }}>
+                Current Logistics Notice
+              </h2>
+              <div style={{ color: "var(--ink-secondary)", lineHeight: 1.65, whiteSpace: "pre-line" }}>
+                {storeSettings.deliveryInfo}
+              </div>
+            </div>
+          )}
+
           <div className="content-card">
             <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--navy)", marginBottom: "12px" }}>
               1. Same-Day Showroom Collection (Recommended)
@@ -72,12 +85,12 @@ export default function DeliveryPage() {
 
         <div className="showroom-card">
           <span className="section-eyebrow">Showroom Pickup Point</span>
-          <h3>{STORE_INFO.name}</h3>
+          <h3>{storeSettings.name}</h3>
           <p style={{ color: "var(--ink-secondary)", fontSize: "0.9rem", marginBottom: "14px" }}>
-            {STORE_INFO.address}
+            {storeSettings.address}
           </p>
           <p style={{ color: "var(--ink-secondary)", fontSize: "0.9rem", marginBottom: "18px" }}>
-            <strong>Collection Hours:</strong> {STORE_INFO.openingHours}
+            <strong>Collection Hours:</strong> {storeSettings.openingHours}
           </p>
           <a
             href={whatsappUrl}

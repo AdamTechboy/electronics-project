@@ -1,7 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { STORE_INFO, createWhatsAppEnquiryUrl } from "@/lib/catalogue-data";
+import { createWhatsAppEnquiryUrl } from "@/lib/catalogue-data";
+import { getStoreSettings } from "@/lib/catalogue-db";
 
 export const metadata: Metadata = {
   title: "About Us | Muhammad Kairu Electronics (Jos)",
@@ -9,30 +10,42 @@ export const metadata: Metadata = {
     "Learn about Muhammad Kairu Electronics — Plateau State's specialist retailer for hybrid solar inverters, lithium batteries, solar panels, and quality home electronics.",
 };
 
-export default function AboutPage() {
-  const whatsappUrl = createWhatsAppEnquiryUrl();
+export default async function AboutPage() {
+  const storeSettings = await getStoreSettings();
+  const whatsappUrl = createWhatsAppEnquiryUrl("About Us Enquiry", "", "", storeSettings.whatsapp);
 
   return (
     <div className="container" style={{ padding: "40px 0 60px" }}>
       <div style={{ marginBottom: "32px" }}>
         <span className="section-eyebrow">Retailer Profile</span>
         <h1 style={{ fontSize: "clamp(2rem, 3.5vw, 2.8rem)", fontWeight: 900, color: "var(--navy)", marginBottom: "8px" }}>
-          About {STORE_INFO.name}
+          About {storeSettings.name}
         </h1>
         <p style={{ color: "var(--ink-secondary)", fontSize: "1.05rem", maxWidth: "700px", lineHeight: 1.6 }}>
-          {STORE_INFO.tagline} — Supplying durable electronics and proven solar energy hardware to families,
+          {storeSettings.tagline} — Supplying durable electronics and proven solar energy hardware to families,
           offices, and institutions across Jos and Plateau State.
         </p>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "36px", alignItems: "start" }}>
         <div>
+          {storeSettings.aboutText && (
+            <div className="content-card" style={{ marginBottom: "24px" }}>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--navy)", marginBottom: "12px" }}>
+                Company Overview
+              </h2>
+              <div style={{ color: "var(--ink-secondary)", lineHeight: 1.65, whiteSpace: "pre-line" }}>
+                {storeSettings.aboutText}
+              </div>
+            </div>
+          )}
+
           <div className="content-card">
             <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--navy)", marginBottom: "12px" }}>
               Our Business Mission
             </h2>
             <p style={{ color: "var(--ink-secondary)", lineHeight: 1.65, marginBottom: "14px" }}>
-              Based at Rochas Plaza on Ahmadu Bello Way, Jos, <strong>Muhammad Kairu Electronics</strong> was established
+              Based at Rochas Plaza on Ahmadu Bello Way, Jos, <strong>{storeSettings.name}</strong> was established
               to solve two fundamental everyday challenges for Nigerian households and businesses:
             </p>
             <ul style={{ paddingLeft: "20px", color: "var(--ink-secondary)", lineHeight: 1.7, marginBottom: "16px" }}>
@@ -54,7 +67,7 @@ export default function AboutPage() {
 
           <div className="content-card">
             <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--navy)", marginBottom: "12px" }}>
-              Why Choose Muhammad Kairu Electronics?
+              Why Choose {storeSettings.name}?
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
               <div style={{ padding: "12px", background: "var(--bg-warm)", borderRadius: "var(--radius-sm)" }}>
@@ -90,10 +103,10 @@ export default function AboutPage() {
           <span className="section-eyebrow">Showroom Details</span>
           <h3>Visit Our Jos Store</h3>
           <p style={{ color: "var(--ink-secondary)", fontSize: "0.9rem", marginBottom: "16px" }}>
-            {STORE_INFO.address}
+            {storeSettings.address}
           </p>
           <p style={{ color: "var(--ink-secondary)", fontSize: "0.9rem", marginBottom: "16px" }}>
-            <strong>Opening Hours:</strong> {STORE_INFO.openingHours}
+            <strong>Opening Hours:</strong> {storeSettings.openingHours}
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
             <Link href="/products" className="btn btn-navy btn-sm" style={{ textAlign: "center" }}>

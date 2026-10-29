@@ -3,18 +3,33 @@ import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { ProductSvg } from "@/components/product-svg";
 import {
-  STORE_INFO,
-  CATEGORIES,
-  BRANDS,
-  getFeaturedProducts,
   createWhatsAppEnquiryUrl,
   createSolarAssessmentUrl,
 } from "@/lib/catalogue-data";
+import {
+  getStoreProducts,
+  getStoreCategories,
+  getStoreBrands,
+  getStoreSettings,
+} from "@/lib/catalogue-db";
 
-export default function HomePage() {
-  const featuredProducts = getFeaturedProducts();
-  const whatsappUrl = createWhatsAppEnquiryUrl();
-  const solarAssessmentUrl = createSolarAssessmentUrl();
+export default async function HomePage() {
+  const [allProducts, categories, brands, storeSettings] = await Promise.all([
+    getStoreProducts(),
+    getStoreCategories(),
+    getStoreBrands(),
+    getStoreSettings(),
+  ]);
+
+  const featuredProducts = allProducts.filter((p) => p.isFeatured);
+
+  const whatsappUrl = createWhatsAppEnquiryUrl(
+    "General Enquiry",
+    "",
+    "",
+    storeSettings.whatsapp
+  );
+  const solarAssessmentUrl = createSolarAssessmentUrl(storeSettings.whatsapp);
 
   return (
     <>
@@ -26,15 +41,14 @@ export default function HomePage() {
           <div className="hero-layout">
             <div>
               <div className="hero-tag">
-                <span>☀️</span> Specialized Solar & Electronics Retailer · Jos
+                <span>☀️</span> Specialized Solar &amp; Electronics Retailer · Jos
               </div>
               <h1 className="hero-title">
                 Reliable Electronics. <span className="highlight">Smarter Solar Power.</span>
               </h1>
               <p className="hero-description">
                 Explore genuine hybrid solar inverters, high-capacity lithium batteries, Tier-1 solar
-                panels, 4K Smart TVs, and tropicalized home appliances. Visit our showroom at Rochas
-                Plaza, Jos or chat directly with our technical sales team on WhatsApp.
+                panels, 4K Smart TVs, and tropicalized home appliances. Visit our showroom at {storeSettings.address} or chat directly with our technical sales team on WhatsApp.
               </p>
 
               <div className="hero-cta-bar">
@@ -58,76 +72,37 @@ export default function HomePage() {
               <div className="hero-trust-bar">
                 <div className="hero-trust-box">
                   <span className="hero-trust-icon">📍</span>
-                  <div className="hero-trust-text">
+                  <div>
                     <strong>Jos Showroom</strong>
-                    <span>Rochas Plaza, opp. Zenith Bank</span>
+                    <span>Rochas Plaza, Ahmadu Bello Way</span>
                   </div>
                 </div>
+
                 <div className="hero-trust-box">
                   <span className="hero-trust-icon">🛡️</span>
-                  <div className="hero-trust-text">
-                    <strong>Genuine Warranties</strong>
-                    <span>1 to 5 Years Official Manufacturer</span>
+                  <div>
+                    <strong>Official Warranties</strong>
+                    <span>Direct manufacturer backed</span>
                   </div>
                 </div>
+
                 <div className="hero-trust-box">
                   <span className="hero-trust-icon">⚡</span>
-                  <div className="hero-trust-text">
-                    <strong>Solar Load Sizing</strong>
-                    <span>Expert Advice for Homes & Offices</span>
+                  <div>
+                    <strong>Pre-Tested Before Pickup</strong>
+                    <span>100% genuine equipment</span>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Composite Hardware Showcase Visual */}
+            {/* Right: Hero Featured Hero Visual */}
             <div className="hero-visual-card">
-              <div className="hero-visual-header">
-                <span className="hero-visual-badge">SHOWROOM HIGHLIGHTS</span>
-                <span style={{ fontSize: "0.8rem", color: "#CBD5E1" }}>In Stock in Jos</span>
-              </div>
-
-              <div className="hero-visual-grid">
-                <div className="hero-showcase-tile">
-                  <div className="hero-showcase-tile-svg">
-                    <ProductSvg type="inverter" alt="Hybrid Solar Inverter" />
-                  </div>
-                  <h4>Felicity 5kVA Hybrid</h4>
-                  <p>48V Pure Sine Wave</p>
-                  <div className="price-tag">₦845,000</div>
-                </div>
-
-                <div className="hero-showcase-tile">
-                  <div className="hero-showcase-tile-svg">
-                    <ProductSvg type="battery" alt="LiFePO4 Lithium Battery" />
-                  </div>
-                  <h4>10kWh LiFePO4</h4>
-                  <p>48V 200Ah Wall-Mount</p>
-                  <div className="price-tag">₦2,150,000</div>
-                </div>
-
-                <div className="hero-showcase-tile">
-                  <div className="hero-showcase-tile-svg">
-                    <ProductSvg type="tv" alt="LG 65 Inch 4K Smart TV" />
-                  </div>
-                  <h4>LG 65&quot; 4K Smart TV</h4>
-                  <p>webOS with Magic Remote</p>
-                  <div className="price-tag">₦890,000</div>
-                </div>
-
-                <div className="hero-showcase-tile">
-                  <div className="hero-showcase-tile-svg">
-                    <ProductSvg type="fridge" alt="Hisense Double Door Refrigerator" />
-                  </div>
-                  <h4>Hisense 250L Refrigerator</h4>
-                  <p>Total No-Frost Inverter</p>
-                  <div className="price-tag">₦385,000</div>
-                </div>
-              </div>
-
-              <div className="hero-visual-footer">
-                <span>✓ Tested before dispatch</span>
-                <span>✓ Pick up in showroom today</span>
+              <div className="hero-visual-badge">Featured Solar Core</div>
+              <ProductSvg type="inverter" alt="Solar Inverter System" />
+              <div className="hero-visual-caption">
+                <strong>Felicity Solar 5kVA Hybrid Inverter</strong>
+                <span>Pure Sine Wave · 120A MPPT · Lithium Ready</span>
               </div>
             </div>
           </div>
@@ -135,46 +110,37 @@ export default function HomePage() {
       </section>
 
       {/* ----------------------------------------------------------------------
-          2. Shop by Category (Visual Department Cards)
+          2. Category Gateway Grid
       ---------------------------------------------------------------------- */}
       <section className="section" aria-label="Product Categories">
         <div className="container">
           <div className="section-head">
             <div>
-              <span className="section-eyebrow">Product Departments</span>
-              <h2 className="section-title">Shop by Category</h2>
-              <p className="section-subtitle">
-                Explore curated power solutions and electronics tailored for Nigerian homes and businesses.
-              </p>
+              <span className="section-eyebrow">Browse by Specialization</span>
+              <h2 className="section-title">Showroom Departments</h2>
             </div>
-            <Link href="/categories" className="section-link">
-              All categories →
+            <Link href="/products" className="section-link">
+              View all products →
             </Link>
           </div>
 
           <div className="category-grid">
-            {CATEGORIES.map((category) => (
+            {categories.map((cat) => (
               <Link
-                key={category.slug}
-                href={`/products?category=${category.slug}`}
-                className={`category-card ${category.department === "solar" ? "solar-category" : ""}`}
+                key={cat.slug}
+                href={`/products?category=${cat.slug}`}
+                className="category-card"
               >
-                <div className="category-card-top">
-                  <div className="category-icon-box">
-                    {category.slug === "solar-power-solutions" && "☀️"}
-                    {category.slug === "television-visuals" && "📺"}
-                    {category.slug === "home-audio" && "🔊"}
-                    {category.slug === "refrigeration-cooling" && "❄️"}
-                    {category.slug === "kitchen-appliances" && "🍳"}
-                    {category.slug === "electrical-accessories" && "🔌"}
-                  </div>
-                  <span className="category-badge">{category.itemCountEstimate}</span>
+                <div className="category-card-icon">
+                  <ProductSvg type={cat.iconType} alt={cat.name} />
                 </div>
-                <h3 className="category-title">{category.name}</h3>
-                <p className="category-desc">{category.description}</p>
-                <div className="category-footer">
-                  <span>Browse Products</span>
-                  <span>→</span>
+                <div className="category-card-content">
+                  <span className="category-department-pill">
+                    {cat.department === "solar" ? "☀️ Solar & Power" : "📺 Electronics"}
+                  </span>
+                  <h3 className="category-card-title">{cat.name}</h3>
+                  <p className="category-card-description">{cat.description}</p>
+                  <span className="category-card-count">{cat.itemCountEstimate}</span>
                 </div>
               </Link>
             ))}
@@ -183,20 +149,17 @@ export default function HomePage() {
       </section>
 
       {/* ----------------------------------------------------------------------
-          3. Featured Products Grid (Image-First, Realistic Prices & Specs)
+          3. Featured Showroom Hardware (Dynamic DB Backed)
       ---------------------------------------------------------------------- */}
-      <section className="section" style={{ background: "#FFFFFF" }} aria-label="Featured Products">
+      <section className="section" style={{ background: "white" }} aria-label="Featured Products">
         <div className="container">
           <div className="section-head">
             <div>
-              <span className="section-eyebrow">Curated Catalogue</span>
-              <h2 className="section-title">Featured Products in Showroom</h2>
-              <p className="section-subtitle">
-                Genuine equipment currently available for inspection and pickup at Rochas Plaza, Jos.
-              </p>
+              <span className="section-eyebrow">Hand-Picked Recommendations</span>
+              <h2 className="section-title">Featured Showroom Equipment</h2>
             </div>
             <Link href="/products" className="section-link">
-              View all products ({featuredProducts.length}+) →
+              Browse full inventory ({allProducts.length} items) →
             </Link>
           </div>
 
@@ -292,7 +255,7 @@ export default function HomePage() {
       <section className="brand-strip-section" aria-label="Brand Partners">
         <div className="container">
           <div className="brand-strip-grid">
-            {BRANDS.map((brand) => (
+            {brands.map((brand) => (
               <div key={brand.slug} className="brand-strip-item">
                 <strong>{brand.name}</strong>
                 <span>{brand.specialty}</span>
@@ -322,27 +285,27 @@ export default function HomePage() {
                   <span className="icon">📍</span>
                   <div>
                     <strong>Showroom Address</strong>
-                    <span>{STORE_INFO.address}</span>
+                    <span>{storeSettings.address}</span>
                   </div>
                 </li>
                 <li className="showroom-detail-item">
                   <span className="icon">🕒</span>
                   <div>
                     <strong>Operating Hours</strong>
-                    <span>{STORE_INFO.openingHours}</span>
+                    <span>{storeSettings.openingHours}</span>
                   </div>
                 </li>
                 <li className="showroom-detail-item">
                   <span className="icon">📞</span>
                   <div>
                     <strong>Showroom Telephone / WhatsApp</strong>
-                    <span>{STORE_INFO.phoneDisplay}</span>
+                    <span>{storeSettings.phoneDisplay}</span>
                   </div>
                 </li>
                 <li className="showroom-detail-item">
                   <span className="icon">🚚</span>
                   <div>
-                    <strong>Pickup & Logistics</strong>
+                    <strong>Pickup &amp; Logistics</strong>
                     <span>Same-day pickup in Jos; secure transport across Plateau and Northern Nigeria</span>
                   </div>
                 </li>
@@ -350,7 +313,7 @@ export default function HomePage() {
 
               <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
                 <a
-                  href={`tel:${STORE_INFO.phone}`}
+                  href={`tel:${storeSettings.phone}`}
                   className="btn btn-navy btn-sm"
                 >
                   📞 Call Showroom
@@ -417,7 +380,7 @@ export default function HomePage() {
                   </summary>
                   <div className="faq-content">
                     Absolutely. Due to exchange rate shifts and daily showroom sales, we encourage customers to send a
-                    quick WhatsApp message or call 07038365737 to confirm current stock and exact price before visiting.
+                    quick WhatsApp message or call {storeSettings.phone} to confirm current stock and exact price before visiting.
                   </div>
                 </details>
               </div>
