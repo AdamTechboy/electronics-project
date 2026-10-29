@@ -1,6 +1,11 @@
 import React from "react";
 import type { Metadata } from "next";
 import { CatalogueBrowser } from "@/components/catalogue-browser";
+import {
+  getStoreProducts,
+  getStoreCategories,
+  getStoreBrands,
+} from "@/lib/catalogue-db";
 
 export const metadata: Metadata = {
   title: "Product Catalogue | Solar Equipment & Electronics",
@@ -14,6 +19,12 @@ export default async function ProductsPage({
   searchParams: Promise<{ category?: string; q?: string; brand?: string; department?: string }>;
 }) {
   const params = await searchParams;
+
+  const [products, categories, brands] = await Promise.all([
+    getStoreProducts(),
+    getStoreCategories(),
+    getStoreBrands(),
+  ]);
 
   return (
     <div className="container" style={{ padding: "40px 0 60px" }}>
@@ -29,12 +40,15 @@ export default async function ProductsPage({
         </p>
       </div>
 
-      {/* Interactive Catalogue Browser */}
+      {/* Interactive Catalogue Browser with Database Data */}
       <CatalogueBrowser
         initialCategory={params.category || "all"}
         initialQuery={params.q || ""}
         initialBrand={params.brand || "all"}
         initialDepartment={params.department || "all"}
+        initialProducts={products}
+        initialCategories={categories}
+        initialBrands={brands}
       />
     </div>
   );

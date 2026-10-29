@@ -26,5 +26,6 @@ export type AuditEventInput = {
 };
 
 export async function recordAuditEvent(_event: AuditEventInput): Promise<void> {
+  void _event;
   throw new Error("Audit persistence is not configured; sensitive mutations must remain disabled.");
 }

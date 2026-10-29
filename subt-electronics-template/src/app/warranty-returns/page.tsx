@@ -1,7 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { STORE_INFO, createWhatsAppEnquiryUrl } from "@/lib/catalogue-data";
+import { createWhatsAppEnquiryUrl } from "@/lib/catalogue-data";
+import { getStoreSettings } from "@/lib/catalogue-db";
 
 export const metadata: Metadata = {
   title: "Warranty & Return Terms | Muhammad Kairu Electronics (Jos)",
@@ -9,8 +10,9 @@ export const metadata: Metadata = {
     "Warranty terms, pre-dispatch testing, and after-sales support details for equipment purchased at Muhammad Kairu Electronics, Jos.",
 };
 
-export default function WarrantyReturnsPage() {
-  const whatsappUrl = createWhatsAppEnquiryUrl();
+export default async function WarrantyReturnsPage() {
+  const storeSettings = await getStoreSettings();
+  const whatsappUrl = createWhatsAppEnquiryUrl("Warranty Enquiry", "", "", storeSettings.whatsapp);
 
   return (
     <div className="container" style={{ padding: "40px 0 60px" }}>
@@ -27,6 +29,17 @@ export default function WarrantyReturnsPage() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "36px", alignItems: "start" }}>
         <div>
+          {storeSettings.warrantyPolicy && (
+            <div className="content-card" style={{ marginBottom: "24px" }}>
+              <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--navy)", marginBottom: "12px" }}>
+                Current Warranty Notice
+              </h2>
+              <div style={{ color: "var(--ink-secondary)", lineHeight: 1.65, whiteSpace: "pre-line" }}>
+                {storeSettings.warrantyPolicy}
+              </div>
+            </div>
+          )}
+
           <div className="content-card">
             <h2 style={{ fontSize: "1.3rem", fontWeight: 800, color: "var(--navy)", marginBottom: "12px" }}>
               Official Manufacturer Warranties
@@ -79,7 +92,7 @@ export default function WarrantyReturnsPage() {
             Bring your equipment and sales receipt directly to our Jos showroom or message our customer service desk:
           </p>
           <p style={{ color: "var(--navy)", fontWeight: 700, fontSize: "0.9rem", marginBottom: "18px" }}>
-            📍 {STORE_INFO.shortAddress}
+            📍 {storeSettings.address}
           </p>
           <a
             href={whatsappUrl}

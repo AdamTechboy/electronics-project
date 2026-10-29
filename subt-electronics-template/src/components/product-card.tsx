@@ -35,11 +35,22 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const whatsappUrl = createWhatsAppEnquiryUrl(product.name, product.slug, priceFormatted);
 
+  const isImageUrl = imageSvg.startsWith("http://") || imageSvg.startsWith("https://") || imageSvg.startsWith("/");
+
   return (
     <article className="product-card">
       <div className="product-card-image-wrap">
         <Link href={`/products/${product.slug}`} tabIndex={-1} aria-hidden="true">
-          <ProductSvg type={imageSvg} alt={product.name} />
+          {isImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imageSvg}
+              alt={product.name}
+              style={{ width: "100%", height: "100%", objectFit: "contain", padding: "12px" }}
+            />
+          ) : (
+            <ProductSvg type={imageSvg} alt={product.name} />
+          )}
         </Link>
         <div className="product-badge-group">
           <span className="badge-brand">{product.brand}</span>

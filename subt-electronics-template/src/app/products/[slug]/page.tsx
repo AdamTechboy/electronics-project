@@ -7,11 +7,15 @@ import { EnquiryForm } from "@/components/enquiry-form";
 import { ProductCard } from "@/components/product-card";
 import {
   PRODUCTS,
-  getProductBySlug,
-  getProductsByCategory,
   createWhatsAppEnquiryUrl,
-  STORE_INFO,
 } from "@/lib/catalogue-data";
+import {
+  getStoreProductBySlug,
+  getStoreProducts,
+  getStoreSettings,
+} from "@/lib/catalogue-db";
+
+export const dynamicParams = true;
 
 export function generateStaticParams() {
   return PRODUCTS.map((p) => ({ slug: p.slug }));
@@ -23,7 +27,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getStoreProductBySlug(slug);
 
   if (!product) {
     return { title: "Product Not Found" };
@@ -41,14 +45,18 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const [product, allProducts, storeSettings] = await Promise.all([
+    getStoreProductBySlug(slug),
+    getStoreProducts(),
+    getStoreSettings(),
+  ]);
 
   if (!product) {
     notFound();
   }
 
-  const relatedProducts = getProductsByCategory(product.categorySlug)
-    .filter((p) => p.slug !== product.slug)
+  const relatedProducts = allProducts
+    .filter((p) => p.categorySlug === product.categorySlug && p.slug !== product.slug)
     .slice(0, 3);
 
   const whatsappUrl = createWhatsAppEnquiryUrl(
@@ -75,7 +83,16 @@ export default async function ProductDetailPage({
         {/* Left: Product Visual Gallery Box */}
         <div className="product-gallery-box">
           <div className="product-gallery-main">
-            <ProductSvg type={product.imageSvg} alt={product.name} />
+            {product.imageSvg.startsWith("http://") || product.imageSvg.startsWith("https://") || product.imageSvg.startsWith("/") ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={product.imageSvg}
+                alt={product.name}
+                style={{ maxWidth: "100%", maxHeight: "320px", objectFit: "contain" }}
+              />
+            ) : (
+              <ProductSvg type={product.imageSvg} alt={product.name} />
+            )}
           </div>
 
           <div
@@ -109,7 +126,7 @@ export default async function ProductDetailPage({
               📍 In-Store Testing & Collection
             </strong>
             <p style={{ fontSize: "0.8125rem", color: "var(--ink-secondary)", margin: 0, lineHeight: 1.5 }}>
-              Available for immediate physical inspection at <strong>{STORE_INFO.shortAddress}</strong>, Jos.
+              Available for immediate physical inspection at <strong>{storeSettings.address}</strong>.
               All equipment is powered on and tested before customer collection.
             </p>
           </div>
@@ -169,10 +186,10 @@ export default async function ProductDetailPage({
             </a>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
               <a
-                href={`tel:${STORE_INFO.phone}`}
+                href={`tel:${storeSettings.phone}`}
                 className="btn btn-navy btn-sm"
               >
-                📞 Call {STORE_INFO.phoneDisplay}
+                📞 Call {storeSettings.phoneDisplay}
               </a>
               <Link href="/contact" className="btn btn-outline btn-sm">
                 📍 Showroom Directions

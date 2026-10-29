@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/catalogue-data";
+import { getStoreCategories } from "@/lib/catalogue-db";
 
 export const metadata: Metadata = {
   title: "Product Categories | Solar Power & Electronics",
@@ -9,7 +9,9 @@ export const metadata: Metadata = {
     "Explore product categories at Muhammad Kairu Electronics in Jos: Solar Solutions, Inverters, Lithium Batteries, 4K Smart TVs, Audio, Refrigeration, and Electrical Accessories.",
 };
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+  const categories = await getStoreCategories();
+
   return (
     <div className="container" style={{ padding: "40px 0 60px" }}>
       <div style={{ marginBottom: "32px" }}>
@@ -24,7 +26,7 @@ export default function CategoriesPage() {
       </div>
 
       <div className="category-grid">
-        {CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <Link
             key={category.slug}
             href={`/products?category=${category.slug}`}
@@ -38,6 +40,7 @@ export default function CategoriesPage() {
                 {category.slug === "refrigeration-cooling" && "❄️"}
                 {category.slug === "kitchen-appliances" && "🍳"}
                 {category.slug === "electrical-accessories" && "🔌"}
+                {!["solar-power-solutions", "television-visuals", "home-audio", "refrigeration-cooling", "kitchen-appliances", "electrical-accessories"].includes(category.slug) && "⚡"}
               </div>
               <span className="category-badge">{category.itemCountEstimate}</span>
             </div>
